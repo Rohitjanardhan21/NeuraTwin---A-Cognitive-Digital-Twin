@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>🧠 Cognitive Twin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .header .status {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .container {
+            padding: 15px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .stat {
+            margin: 12px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-green { background: linear-gradient(90deg, #4CAF50, #8BC34A); }
+        .progress-yellow { background: linear-gradient(90deg, #FFC107, #FF9800); }
+        .progress-red { background: linear-gradient(90deg, #F44336, #E91E63); }
+        
+        .big-stat {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .big-stat .emoji {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+        
+        .big-stat .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .big-stat .label {
+            font-size: 1em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .universe-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 2px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .universe-cautious { border-color: #4CAF50; background: #E8F5E9; }
+        .universe-ambitious { border-color: #F44336; background: #FFEBEE; }
+        .universe-balanced { border-color: #2196F3; background: #E3F2FD; }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-success {
+            background: #4CAF50;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+        
+        .btn-danger {
+            background: #F44336;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+        }
+        
+        .quick-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .quick-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.5em;
+            background: #f5f5f5;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 50px auto;
+            max-width: 500px;
+        }
+        
+        .modal-close {
+            float: right;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            margin: 10px 0;
+            font-family: inherit;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+        
+        .alert-warning { background: #FFF3E0; border-color: #FF9800; }
+        .alert-critical { background: #FFEBEE; border-color: #F44336; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧠 Cognitive Twin</h1>
+        <div class="status" id="status">Loading...</div>
+    </div>
+    
+    <div class="container">
+        <!-- Energy Card -->
+        <div class="card">
+            <div class="big-stat">
+                <div class="emoji" id="energy-emoji">⚡</div>
+                <div class="value" id="energy-value">--</div>
+                <div class="label">Energy Level</div>
+            </div>
+            <div class="stat">
+                <div class="progress-bar">
+                    <div class="progress-fill progress-green" id="energy-bar" style="width: 0%">0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="card">
+            <h2>📊 Your State</h2>
+            <div class="stat">
+                <div class="stat-label">Stress Level</div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-yellow" id="stress-bar" style="width: 0%">0%</div>
+                </div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Decision Quality</div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-green" id="decision-bar" style="width: 0%">0%</div>
+                </div>
+            </div>
+            <div id="recommendation" style="margin-top: 15px; padding: 15px; background: #f5f5f5; border-radius: 10px; font-size: 0.95em;">
+                Loading...
+            </div>
+        </div>
+        
+        <!-- Flow State -->
+        <div class="card">
+            <h2>🔥 Flow State</h2>
+            <div class="big-stat">
+                <div class="emoji" id="flow-emoji">😴</div>
+                <div class="value" id="flow-text">Not Active</div>
+            </div>
+            <div style="text-align: center; font-size: 0.9em; color: #666;">
+                <div>Today: <strong id="flow-time">0</strong> min | Sessions: <strong id="flow-sessions">0</strong></div>
+            </div>
+            <button class="btn" id="flow-btn" onclick="toggleFlow()">Start Flow</button>
+        </div>
+        
+        <!-- Parallel Universes -->
+        <div class="card">
+            <h2>🌌 Parallel Universes</h2>
+            <div class="universe-item universe-cautious">
+                <div>
+                    <div style="font-size: 1.5em;">🛡️</div>
+                    <div style="font-weight: bold;">Cautious You</div>
+                </div>
+                <div style="font-size: 1.5em; font-weight: bold;" id="cautious-score">0</div>
+            </div>
+            <div class="universe-item universe-ambitious">
+                <div>
+                    <div style="font-size: 1.5em;">🚀</div>
+                    <div style="font-weight: bold;">Ambitious You</div>
+                </div>
+                <div style="font-size: 1.5em; font-weight: bold;" id="ambitious-score">0</div>
+            </div>
+            <div class="universe-item universe-balanced">
+                <div>
+                    <div style="font-size: 1.5em;">⚖️</div>
+                    <div style="font-weight: bold;">Balanced You</div>
+                </div>
+                <div style="font-size: 1.5em; font-weight: bold;" id="balanced-score">0</div>
+            </div>
+            <div id="universe-leader" style="margin-top: 15px; text-align: center; font-weight: bold; color: #667eea;">
+                Loading...
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <button class="quick-btn" onclick="showDecisionModal()">🎯</button>
+        <button class="quick-btn" onclick="takeBreak()">☕</button>
+        <button class="quick-btn" onclick="refresh()">🔄</button>
+    </div>
+    
+    <!-- Decision Modal -->
+    <div class="modal" id="decision-modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2>🎯 Check Decision</h2>
+            <textarea id="decision-input" rows="4" placeholder="What decision are you considering?"></textarea>
+            <button class="btn" onclick="checkDecision()">Analyze</button>
+            <div id="decision-result"></div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:5001/api';
+        let flowActive = false;
+        
+        // Auto-update
+        setInterval(updateAll, 5000);
+        updateAll();
+        
+        async function updateAll() {
+            await updateState();
+            await updateFlow();
+            await updateUniverses();
+        }
+        
+        async function updateState() {
+            try {
+                const response = await fetch(`${API_URL}/state/current`);
+                const state = await response.json();
+                
+                // Update energy
+                const energy = state.energy_level;
+                document.getElementById('energy-value').textContent = energy + '%';
+                document.getElementById('energy-emoji').textContent = energy > 70 ? '⚡' : energy > 40 ? '🔋' : '🪫';
+                updateBar('energy', energy);
+                updateBar('stress', state.stress_level);
+                updateBar('decision', state.decision_quality);
+                
+                // Update status
+                document.getElementById('status').textContent = state.recommendation;
+                document.getElementById('recommendation').innerHTML = `<strong>💡</strong> ${state.recommendation}`;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function updateFlow() {
+            try {
+                const response = await fetch(`${API_URL}/flow/status`);
+                const data = await response.json();
+                
+                flowActive = data.currently_in_flow;
+                document.getElementById('flow-emoji').textContent = flowActive ? '🔥' : '😴';
+                document.getElementById('flow-text').textContent = flowActive ? 'ACTIVE' : 'Not Active';
+                document.getElementById('flow-time').textContent = data.today_flow_time;
+                document.getElementById('flow-sessions').textContent = data.today_sessions;
+                document.getElementById('flow-btn').textContent = flowActive ? 'End Flow' : 'Start Flow';
+                document.getElementById('flow-btn').className = flowActive ? 'btn btn-danger' : 'btn btn-success';
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function updateUniverses() {
+            try {
+                const response = await fetch(`${API_URL}/universe/view`);
+                const data = await response.json();
+                
+                document.getElementById('cautious-score').textContent = data.universes.cautious.score;
+                document.getElementById('ambitious-score').textContent = data.universes.ambitious.score;
+                document.getElementById('balanced-score').textContent = data.universes.balanced.score;
+                document.getElementById('universe-leader').textContent = '🏆 ' + data.recommendation;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function updateBar(id, value) {
+            const bar = document.getElementById(`${id}-bar`);
+            bar.style.width = `${value}%`;
+            bar.textContent = `${value}%`;
+            
+            if (id === 'stress') {
+                bar.className = 'progress-fill ' + (value > 70 ? 'progress-red' : value > 40 ? 'progress-yellow' : 'progress-green');
+            } else {
+                bar.className = 'progress-fill ' + (value > 70 ? 'progress-green' : value > 40 ? 'progress-yellow' : 'progress-red');
+            }
+        }
+        
+        async function toggleFlow() {
+            try {
+                const endpoint = flowActive ? 'end' : 'start';
+                await fetch(`${API_URL}/flow/${endpoint}`, { method: 'POST' });
+                await updateFlow();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function showDecisionModal() {
+            document.getElementById('decision-modal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('decision-modal').style.display = 'none';
+        }
+        
+        async function checkDecision() {
+            const decision = document.getElementById('decision-input').value.trim();
+            if (!decision) return;
+            
+            const resultDiv = document.getElementById('decision-result');
+            resultDiv.innerHTML = '<div style="text-align: center; padding: 20px;">Analyzing...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/decision/check`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ decision })
+                });
+                const data = await response.json();
+                
+                let html = `
+                    <div class="alert alert-${data.regret.percentage > 60 ? 'critical' : 'warning'}" style="margin-top: 15px;">
+                        <strong>😱 Regret: ${data.regret.percentage}%</strong><br>
+                        ${data.regret.recommendation}
+                    </div>
+                `;
+                
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="alert alert-critical">Error</div>';
+            }
+        }
+        
+        async function takeBreak() {
+            try {
+                await fetch(`${API_URL}/state/activity`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'break', duration: 5 })
+                });
+                alert('☕ Break logged! Take 5 minutes.');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function refresh() {
+            updateAll();
+        }
+    </script>
+</body>
+</html>
