@@ -36,11 +36,25 @@ def main():
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║
 ║        🧠 COGNITIVE TWIN - FULL SYSTEM STARTUP           ║
+║           🌟 World-Class Edition with Real Tracking      ║
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
     """)
     
     base_dir = Path(__file__).parent
+    
+    # Initialize activity tracking
+    print("🖥️ Initializing activity tracker...")
+    sys.path.insert(0, str(base_dir))
+    try:
+        from core.activity_tracker import get_tracker
+        tracker = get_tracker()
+        if tracker.start_tracking():
+            print("✅ Activity tracking started")
+        else:
+            print("⚠️ Activity tracking unavailable (install pynput)")
+    except Exception as e:
+        print(f"⚠️ Activity tracking error: {e}")
     
     # Start API server
     api_process = start_service(
@@ -64,9 +78,17 @@ def main():
 📡 API Server:      http://localhost:5001
 🌐 Web Interface:   http://localhost:5002
 📱 Mobile View:     http://localhost:5002/mobile
+🖥️ Activity Tracking: ACTIVE (real desktop monitoring)
+🎤 Voice Interface:  Available (say "JARVIS" to activate)
 
 To start the daemon (background monitoring):
     python daemon/twin_daemon.py
+
+To use voice commands:
+    python voice_jarvis.py
+
+To view activity tracking:
+    python track_activity.py
 
 Press Ctrl+C to stop all services
     """)

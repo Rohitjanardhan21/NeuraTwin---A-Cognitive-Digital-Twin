@@ -25,6 +25,8 @@ from core.learning_engine import LearningEngine
 from core.context_awareness import ContextAwarenessEngine
 from core.jarvis_brain import JarvisBrain
 from core.proactive_assistant import ProactiveAssistant
+from core.activity_tracker import get_tracker
+from core.voice_interface import get_voice_interface
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -45,6 +47,8 @@ learning_engine = LearningEngine()
 context_engine = ContextAwarenessEngine()
 jarvis = JarvisBrain()
 proactive = ProactiveAssistant()
+activity_tracker = get_tracker()
+voice_interface = get_voice_interface()
 
 
 # ============= VIRTUAL ASSISTANT ENDPOINTS =============
@@ -507,7 +511,93 @@ def get_jarvis_status():
         "conversation_length": len(jarvis.conversation_history),
         "relationship_level": learning_engine.profile["relationship_level"],
         "total_interactions": len(learning_engine.interactions),
-        "insights_generated": len(learning_engine.insights)
+        "insights_generated": len(learning_engine.insights),
+        "activity_tracking": activity_tracker.is_tracking,
+        "voice_available": voice_interface.is_available()
+    })
+
+
+# ============= ACTIVITY TRACKING ENDPOINTS =============
+
+@app.route('/api/activity/start', methods=['POST'])
+def start_activity_tracking():
+    """Start real activity tracking"""
+    success = activity_tracker.start_tracking()
+    return jsonify({
+        "success": success,
+        "message": "Activity tracking started" if success else "Failed to start tracking",
+        "is_tracking": activity_tracker.is_tracking
+    })
+
+
+@app.route('/api/activity/stop', methods=['POST'])
+def stop_activity_tracking():
+    """Stop activity tracking"""
+    activity_tracker.stop_tracking()
+    return jsonify({
+        "success": True,
+        "message": "Activity tracking stopped",
+        "is_tracking": activity_tracker.is_tracking
+    })
+
+
+@app.route('/api/activity/status', methods=['GET'])
+def get_activity_status():
+    """Get current activity status"""
+    return jsonify(activity_tracker.get_stats_summary())
+
+
+@app.route('/api/activity/level', methods=['GET'])
+def get_activity_level():
+    """Get current activity level"""
+    minutes = request.args.get('minutes', 5, type=int)
+    return jsonify(activity_tracker.get_activity_level(minutes))
+
+
+@app.route('/api/activity/focus', methods=['GET'])
+def get_focus_score():
+    """Get current focus score"""
+    minutes = request.args.get('minutes', 10, type=int)
+    return jsonify(activity_tracker.get_focus_score(minutes))
+
+
+# ============= VOICE INTERFACE ENDPOINTS =============
+
+@app.route('/api/voice/status', methods=['GET'])
+def get_voice_status():
+    """Get voice interface status"""
+    return jsonify({
+        "available": voice_interface.is_available(),
+        "is_listening": voice_interface.is_listening,
+        "wake_word": voice_interface.wake_word
+    })
+
+
+@app.route('/api/voice/speak', methods=['POST'])
+def voice_speak():
+    """Make JARVIS speak"""
+    data = request.json
+    text = data.get('text', '')
+    
+    if not text:
+        return jsonify({"error": "No text provided"}), 400
+    
+    success = voice_interface.speak(text)
+    return jsonify({
+        "success": success,
+        "text": text
+    })
+
+
+@app.route('/api/voice/listen', methods=['POST'])
+def voice_listen():
+    """Listen for voice command"""
+    timeout = request.json.get('timeout', 5) if request.json else 5
+    
+    command = voice_interface.listen(timeout)
+    return jsonify({
+        "command": command,
+        "success": command is not None
     })
 
 

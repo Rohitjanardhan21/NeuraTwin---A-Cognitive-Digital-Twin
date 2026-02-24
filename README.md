@@ -23,6 +23,8 @@ NeuraTwin is an AI-powered cognitive assistant that creates a digital model of y
 - 📊 **Real-time Monitoring** - Tracks energy, stress, and decision quality
 - 🎯 **Flow State Protection** - Optimizes focus time and blocks interruptions
 - 💡 **Smart Insights** - Generates personalized insights from your patterns
+- 🖥️ **Real Desktop Activity Tracking** - Monitors actual keyboard, mouse, and app usage (NOT simulation!)
+- 🎤 **Voice Interface** - Talk to JARVIS with wake word detection ("Hey JARVIS")
 
 ## 🚀 Quick Start
 
@@ -39,10 +41,25 @@ git clone https://github.com/Rohitjanardhan21/NeuraTwin---A-Cognitive-Digital-Tw
 cd NeuraTwin---A-Cognitive-Digital-Twin
 ```
 
-2. **Install dependencies**
+2. **Install ALL dependencies (World-Class Edition)**
+```bash
+python setup_world_class.py
+```
+
+OR install manually:
 ```bash
 pip install -r requirements.txt
 pip install -r api/requirements.txt
+pip install -r web/requirements.txt
+
+# Activity tracking
+pip install psutil pynput
+
+# Voice interface
+pip install SpeechRecognition pyttsx3 pyaudio
+
+# Windows only
+pip install pywin32
 ```
 
 3. **Set up environment variables**
@@ -56,12 +73,17 @@ cp .env.example .env
 # ANTHROPIC_API_KEY=sk-ant-your-key-here
 ```
 
-4. **Start the system**
+4. **Test all features**
+```bash
+python test_features.py
+```
+
+5. **Start the system**
 ```bash
 python start_all.py
 ```
 
-5. **Open your browser**
+6. **Open your browser**
 ```
 http://localhost:5002
 ```
@@ -86,6 +108,14 @@ http://localhost:5002
 "I'm feeling overwhelmed, help"
 ```
 
+### Voice Commands (Say "JARVIS" first)
+```
+"JARVIS, how am I doing?"
+"JARVIS, start flow state"
+"JARVIS, should I take a break?"
+"JARVIS, what time is it?"
+```
+
 ### Check Decisions
 ```
 "Should I quit my job?"
@@ -98,6 +128,8 @@ http://localhost:5002
 - Stress level tracking
 - Decision quality assessment
 - Flow state sessions
+- **Real desktop activity** (keystrokes, mouse, apps)
+- **Focus score** based on app switching
 
 ## 🏗️ Architecture
 
@@ -108,9 +140,11 @@ NeuraTwin/
 │   ├── context_awareness.py   # Understands context
 │   ├── jarvis_brain.py        # AI-powered conversations
 │   ├── proactive_assistant.py # Proactive suggestions
+│   ├── activity_tracker.py    # Real desktop tracking
+│   ├── voice_interface.py     # Voice commands
 │   └── ...
 ├── api/                       # RESTful API
-│   └── twin_api.py            # 25+ endpoints
+│   └── twin_api.py            # 30+ endpoints
 ├── web/                       # Web interface
 │   ├── assistant_app.py       # Flask server
 │   └── templates/             # Interstellar-themed UI
@@ -118,7 +152,9 @@ NeuraTwin/
 │   ├── multiverse.py          # Parallel universe
 │   ├── future_self.py         # Future prediction
 │   └── parallel_selves.py     # Parallel personas
-└── data/                      # Local data storage
+├── data/                      # Local data storage
+├── setup_world_class.py       # One-click setup
+└── test_features.py           # Feature testing
 ```
 
 ## 🔧 Tech Stack
@@ -127,6 +163,10 @@ NeuraTwin/
 - Python 3.8+
 - Flask (REST API)
 - OpenAI GPT-4 / Anthropic Claude
+- psutil (system monitoring)
+- pynput (activity tracking)
+- SpeechRecognition (voice input)
+- pyttsx3 (text-to-speech)
 
 **Frontend:**
 - JavaScript (Vanilla)
@@ -139,11 +179,13 @@ NeuraTwin/
 
 ## 🎯 Key Metrics
 
-- **25+ API endpoints** for comprehensive functionality
+- **30+ API endpoints** for comprehensive functionality
 - **85%+ prediction accuracy** after 2 weeks of data
-- **6 core AI systems** (learning, context, prediction, proactive, decision, flow)
+- **8 core AI systems** (learning, context, prediction, proactive, decision, flow, activity, voice)
 - **Real-time monitoring** with <5 second update intervals
 - **100% local** - privacy-first architecture
+- **Real desktop tracking** - actual keyboard/mouse/app monitoring (NOT simulation)
+- **Voice interface** - hands-free JARVIS-like interaction
 
 ## 🌟 What Makes It Unique
 
@@ -152,6 +194,9 @@ NeuraTwin/
 3. **Privacy-First** - All data stored locally, no cloud
 4. **Gets Smarter Over Time** - Continuous learning and adaptation
 5. **JARVIS-Like Intelligence** - Sophisticated AI personality
+6. **Real Activity Tracking** - Monitors actual desktop usage (NOT simulation!)
+7. **Voice Interface** - Talk to it like JARVIS from Iron Man
+8. **World-Class Features** - Nothing else like it exists
 
 ## 📊 Use Cases
 
